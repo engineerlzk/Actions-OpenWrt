@@ -5,11 +5,13 @@
 # Author: P3TERX
 # Blog: https://p3terx.com
 #=================================================
+
 name: Build OpenWrt-R7800 (macOS)
+
 on: 
-  public
-  #release:
-  #  types: [published]
+#  public
+  release:
+    types: [published]
   push:
     branches: 
       - master
