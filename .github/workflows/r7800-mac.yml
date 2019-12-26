@@ -6,17 +6,17 @@
 # Blog: https://p3terx.com
 #=================================================
 
-name: Build OpenWrt (macOS)
+name: Build OpenWrt-R7800 (macOS)
 
 on: 
   #public
-  release:
-    types: [published]
+  #release:
+  #  types: [published]
   push:
     branches: 
       - master
-#    paths:
-#      - '.config'
+    paths:
+      - '.config'
 #  schedule:
 #    - cron: 0 8 * * 5
 #  watch:
@@ -40,6 +40,7 @@ jobs:
         hdiutil attach OpenWrt.sparseimage
         curl -fsSL https://raw.githubusercontent.com/P3TERX/dotfiles/master/.bashrc >> ~/.bashrc
         sudo systemsetup -settimezone "Asia/Shanghai"
+        
     - name: Clone source code
       working-directory: /Volumes/OpenWrt
       env: 
@@ -51,6 +52,7 @@ jobs:
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /Volumes/OpenWrt/openwrt $GITHUB_WORKSPACE/openwrt
         sed -i "s/grep Apple.LLVM/grep -E 'Apple.(LLVM|clang)'/g" openwrt/include/prereq-build.mk
+        
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a
 
@@ -69,6 +71,7 @@ jobs:
         cd openwrt
         ./$DIY_SH
         make defconfig
+        
 #    - name: SSH connection to Actions
 #      uses: P3TERX/debugger-action@master
 
@@ -77,16 +80,19 @@ jobs:
         cd openwrt && make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
+        
     - name: Multi-thread compile
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
         make -j$(nproc)
+        
     - name: Single-thread compile
       if: failure()
       run: |
         cd openwrt
         make -j1 V=s
+        
     - name: Upload bin directory
       uses: actions/upload-artifact@master
       if: always()
@@ -100,6 +106,7 @@ jobs:
         cd openwrt/bin/targets/*/*
         rm -rf packages
         echo "::set-env name=FIRMWARE::$(pwd)"
+        
     - name: Upload firmware
       uses: actions/upload-artifact@master
       if: always()
