@@ -6,7 +6,7 @@
 # Blog: https://p3terx.com
 #=================================================
 
-name: Build OpenWrt
+name: Build OpenWrt-R7800
 
 on: 
   release:
@@ -45,6 +45,7 @@ jobs:
         sudo -E apt-get -qq clean
         curl -fsSL https://raw.githubusercontent.com/P3TERX/dotfiles/master/.bashrc >> ~/.bashrc
         sudo ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+        
     - name: Clone source code
       env: 
         REPO_URL: https://github.com/coolsnowwolf/lede
@@ -76,16 +77,19 @@ jobs:
         cd openwrt && make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
+        
     - name: Multi-thread compile
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
         make -j$(nproc)
+        
     - name: Single-thread compile
       if: failure()
       run: |
         cd openwrt
         make -j1 V=s
+        
     - name: Upload bin directory
       uses: actions/upload-artifact@master
       if: always()
@@ -99,6 +103,7 @@ jobs:
         cd openwrt/bin/targets/*/*
         rm -rf packages
         echo "::set-env name=FIRMWARE::$(pwd)"
+        
     - name: Upload firmware
       uses: actions/upload-artifact@master
       if: always()
