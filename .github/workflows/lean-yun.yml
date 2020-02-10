@@ -7,7 +7,7 @@
 #说明书参考：https://p3terx.com/archives/build-openwrt-with-github-actions.html
 #=================================================
 
-name: Build OpenWrt
+name: Build OpenWrt-yun
 
 on:
   release:
