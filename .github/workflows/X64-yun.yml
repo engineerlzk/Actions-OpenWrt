@@ -10,13 +10,13 @@
 name: Build OpenWrtX64-yun
 
 on:
-  release:
-    types: [published]
+  #release:
+  #  types: [published]
   push:
     branches:
       - master
-    paths:
-      - '.config'
+  #  paths:
+  #    - '.config'
 #  schedule:
 #    - cron: 0 8 * * 5
   watch:
